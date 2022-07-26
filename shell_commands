@@ -1,0 +1,178 @@
+>>> from news.models import *
+
+# 1. Создать двух пользователей (с помощью метода User.objects.create_user('username')).
+>>> user_aleks = User.objects.create_user(username = 'Aleksey')
+>>> user_aleks
+<User: Aleksey>
+
+>>> User.objects.create_user(username = 'Ivan')
+<User: Ivan>
+
+# 2. Создать два объекта модели Author, связанные с пользователями.
+>>> author_aleks = Author.objects.create(authorUser = user_aleks)
+>>> author_aleks
+<Author: Author object (1)>
+
+>>> Author.objects.create(authorUser = User.objects.get(username = 'Ivan'))
+<Author: Author object (2)>
+
+
+# 3. Добавить 4 категории в модель Category.
+>>> Category.objects.create(name = 'IT')
+<Category: Category object (1)>
+>>> Category.objects.create(name = 'Game')
+<Category: Category object (2)>
+>>> Category.objects.create(name = 'Sport')
+<Category: Category object (3)>
+>>> Category.objects.create(name = 'Politics')
+<Category: Category object (4)>
+
+# 4. Добавить 2 статьи и 1 новость.
+>>> Post.objects.create(postAuthor=author_aleks, type=Post.ARTICLE, title='Article 1, author Aleksey, hello world!',
+... text='Artificial intelligence research will continue for a long time to come. I doubt skynet will take over the world. He is already among us: the Internet is everywhere.')
+<Post: Post object (1)>
+
+>>> Post.objects.create(postAuthor=Author.objects.get(authorUser__username='Ivan'), type=Post.ARTICLE, title='Article 2, author Ivan. Bad post.',
+... text='Ivan does not know how to write articles. They turn out very bad and no one likes them. Blah blah blah a lot of tex. Very boring and not interesting article.')
+<Post: Post object (2)>
+
+>>> Post.objects.create(postAuthor=author_aleks, type=Post.NEWS, title='News 1, author Aleksey. Latest news!',
+... text='Technology is actively developing in the gaming industry. New games are coming out. Esports tournaments are held. Game developers are needed all over the world!')
+<Post: Post object (3)>
+
+
+# 5. Присвоить им категории (как минимум в одной статье/новости должно быть не меньше 2 категорий).
+>>> PostCategory.objects.create(postThrough=Post.objects.get(id=1), categoryThrough=Category.objects.get(name='IT'))
+<PostCategory: PostCategory object (1)>
+>>> PostCategory.objects.create(postThrough=Post.objects.get(id=1), categoryThrough=Category.objects.get(name='Politics'))
+<PostCategory: PostCategory object (2)>
+
+>>> PostCategory.objects.create(postThrough=Post.objects.get(id=2), categoryThrough=Category.objects.get(name='Game'))
+<PostCategory: PostCategory object (3)>
+
+>>> PostCategory.objects.create(postThrough=Post.objects.get(id=3), categoryThrough=Category.objects.get(name='IT'))
+<PostCategory: PostCategory object (4)>
+>>> PostCategory.objects.create(postThrough=Post.objects.get(id=3), categoryThrough=Category.objects.get(name='Game'))
+<PostCategory: PostCategory object (5)>
+>>> PostCategory.objects.create(postThrough=Post.objects.get(id=3), categoryThrough=Category.objects.get(name='Sport'))
+<PostCategory: PostCategory object (6)>
+
+
+# 6. Создать как минимум 4 комментария к разным объектам модели Post (в каждом объекте должен быть как минимум один комментарий).
+>>> post1 = Post.objects.get(id=1)
+>>> post2 = Post.objects.get(id=2)
+>>> post3 = Post.objects.get(id=3)
+>>> user1 = User.objects.get(username='Aleksey')
+>>> user2 = User.objects.get(username='Ivan')
+
+>>> comment1_1 = Comment.objects.create(commentPost=post1, commentUser=user1, text='Good comment. Author Aleksey')
+>>> comment1_2 = Comment.objects.create(commentPost=post1, commentUser=user2, text='Good comment. Author Ivan')
+>>> comment1_3 = Comment.objects.create(commentPost=post1, commentUser=user2, text='Super comment. Author Ivan')
+
+>>> comment2_1 = Comment.objects.create(commentPost=post2, commentUser=user2, text='Bad comment. Author Ivan')
+>>> comment2_2 = Comment.objects.create(commentPost=post2, commentUser=user2, text='Second bad comment. Author Ivan')
+
+>>> comment3_1 = Comment.objects.create(commentPost=post3, commentUser=user2, text='Good comment. Author Ivan')
+>>> comment3_2 = Comment.objects.create(commentPost=post3, commentUser=user1, text='Bad comment. Author Aleksey')
+>>> comment3_3 = Comment.objects.create(commentPost=post3, commentUser=user1, text='Super comment. Author Aleksey')
+
+# 7. Применяя функции like() и dislike() к статьям/новостям и комментариям, скорректировать рейтинги этих объектов.
+>>> post1.like()
+>>> post1.like()
+>>> post1.like()
+
+>>> post2.dislike()
+>>> post2.dislike()
+>>> post2.dislike()
+>>> post2.dislike()
+>>> post2.dislike()
+
+>>> post3.like()
+>>> post3.like()
+>>> post3.like()
+>>> post3.like()
+>>> post3.like()
+
+>>> comment1_1.like()
+>>> comment1_1.like()
+>>> comment1_1.like()
+>>> comment1_2.like()
+>>> comment1_2.like()
+>>> comment1_2.like()
+>>> comment1_3.like()
+>>> comment1_3.like()
+>>> comment1_3.like()
+>>> comment1_3.like()
+>>> comment1_3.like()
+
+>>> comment2_1.dislike()
+>>> comment2_1.dislike()
+>>> comment2_1.dislike()
+>>> comment2_2.dislike()
+>>> comment2_2.dislike()
+>>> comment2_2.dislike()
+>>> comment2_2.dislike()
+>>> comment2_2.dislike()
+
+>>> comment3_1.like()
+>>> comment3_1.like()
+>>> comment3_1.like()
+>>> comment3_2.dislike()
+>>> comment3_2.dislike()
+>>> comment3_2.dislike()
+>>> comment3_3.like()
+>>> comment3_3.like()
+>>> comment3_3.like()
+>>> comment3_3.like()
+>>> comment3_3.like()
+
+# 8. Обновить рейтинги пользователей.
+>>> author1 = Author.objects.get(authorUser__username = 'Aleksey')
+>>> author2 = Author.objects.get(authorUser__username = 'Ivan')
+
+>>> author1.update_rating()
+>>> author1.rating
+40
+
+>>> author2.update_rating()
+>>> author2.rating
+-12
+
+# 9. Вывести username и рейтинг лучшего пользователя (применяя сортировку и возвращая поля первого объекта).
+>>> Author.objects.all().order_by('-rating').values('authorUser__username', 'rating')[0]
+{'authorUser__username': 'Aleksey', 'rating': 40}
+
+
+# 10. Вывести дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи, основываясь на лайках/дислайках к этой статье.
+>>> best_post = Post.objects.all().order_by('-rating')[0]
+
+>>> best_post.date
+datetime.datetime(2022, 7, 26, 10, 54, 17, 846509, tzinfo=datetime.timezone.utc)
+
+>>> best_post.postAuthor.authorUser.username
+'Aleksey'
+
+>>> best_post.rating
+5
+
+>>> best_post.title
+'News 1, author Aleksey. Latest news!'
+
+>>> best_post.preview()
+'Technology is actively developing in the gaming industry. New games are coming out. Esports tournaments are held. Game devel ...'
+
+
+# ---------
+# В "одну" строку получилось так, но только без preview():
+>>> Post.objects.all().order_by('-rating').values('date', 'postAuthor__authorUser__username', 'rating', 'title')[0]
+{'date': datetime.datetime(2022, 7, 26, 10, 54, 17, 846509, tzinfo=datetime.timezone.utc), 'postAuthor__authorUser__username': 'Aleksey', 'rating': 5, 'title': 'News 1, author Aleksey. Latest news!'}
+
+# Метод preview() можно вызывать только у экземпляра?
+>>> best_post.preview()
+'Technology is actively developing in the gaming industry. New games are coming out. Esports tournaments are held. Game devel ...'
+
+
+# 11. Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
+>>> best_post.comment_set.values('date', 'commentUser__username', 'rating', 'text')
+<QuerySet [{'date': datetime.datetime(2022, 7, 26, 10, 58, 20, 460527, tzinfo=datetime.timezone.utc), 'commentUser__username': 'Ivan', 'rating': 3, 'text': 'Good comment. Author Ivan'}, {'date': datetime.datetime(2022, 7, 26, 10, 58, 29, 534512, tzinfo=datetime.timezone.utc), 'commentUser__username': 'Aleksey', 'rating': -3, 'text': 'Bad comment. Author Aleksey'}, {'date': datetime.datetime(2022, 7, 26, 10, 58, 40, 539599, tzinfo=datetime.timezone.utc), 'commentUser__username': 'Aleksey', 'rating': 5, 'text': 'Super comment. Author Aleksey'}]>
+
