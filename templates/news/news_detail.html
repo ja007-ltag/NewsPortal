@@ -1,0 +1,10 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+News details
+{% endblock title %}
+
+{% block content %}
+<h1>Детали: {{ news_detail.title }}</h1>
+<p>{{ news_detail.text }}</p>
+{% endblock content %}
