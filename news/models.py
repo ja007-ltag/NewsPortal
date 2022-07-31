@@ -21,7 +21,7 @@ class Author(models.Model):
         comment_rating = self.authorUser.comment_set.aggregate(sum_comment=Sum('rating'))
         comment_rating = check_none(comment_rating.get('sum_comment'))
 
-        comment_post_rating = Comment.objects.filter(commentPost__postAuthor=self).\
+        comment_post_rating = Comment.objects.filter(commentPost__postAuthor=self). \
             exclude(commentUser=self.authorUser).aggregate(sum_comment_post=Sum('rating'))
         comment_post_rating = check_none(comment_post_rating.get('sum_comment_post'))
 
@@ -74,6 +74,9 @@ class PostCategory(models.Model):
     postThrough = models.ForeignKey(Post, on_delete=models.CASCADE)
     categoryThrough = models.ForeignKey(Category, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'Post: {self.postThrough}. Category: {self.categoryThrough}'
+
 
 class Comment(models.Model):
     commentPost = models.ForeignKey(Post, on_delete=models.CASCADE)
@@ -89,3 +92,6 @@ class Comment(models.Model):
     def dislike(self):
         self.rating -= 1
         self.save()
+
+    def __str__(self):
+        return f'{self.commentPost.title[:15]}... - {self.text}'

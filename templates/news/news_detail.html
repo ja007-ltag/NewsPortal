@@ -5,6 +5,8 @@ News details
 {% endblock title %}
 
 {% block content %}
-<h1>Детали: {{ news_detail.title }}</h1>
+<h1>{{ news_detail.title }}</h1>
+<h5>Создано: {{ news_detail.date|date:'d.m.Y' }}</h5>
+<hr>
 <p>{{ news_detail.text }}</p>
 {% endblock content %}

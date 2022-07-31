@@ -5,6 +5,33 @@ News list
 {% endblock title %}
 
 {% block content %}
-<h1>Все новости</h1>
-<p>{{ news_list }}</p>
+    <h1>Все новости</h1>
+    <hr>
+
+    {% if news_list %}
+
+        <p>Количество новостей: {{ news_list|length }}</p>
+        <hr>
+
+        <table>
+            <tr>
+                <td>Заголовок</td>
+                <td>Дата (день.месяц.год)</td>
+                <td>Текст 20 слов</td>
+            </tr>
+
+            {% for new in news_list %}
+                <tr>
+                    <td>{{ new.title }}</td>
+                    <td>{{ new.date|date:'d.m.Y' }}</td>
+                    <td>{{ new.text|truncatewords:20 }}</td>
+                </tr>
+            {% endfor %}
+
+        </table>
+
+    {% else %}
+        <h3>Новостей нет!</h3>
+    {% endif %}
+
 {% endblock content %}
